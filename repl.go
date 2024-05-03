@@ -5,24 +5,19 @@ import (
 	"fmt"
 	"os"
 	"strings"
+  "github.com/kalmod/cli_pokedex/internal"
 )
-
-var locationData = locationAreaS{}
 
 type cliCommand struct {
 	name     string
 	help     string
-	callback func() error
+	callback func(*config) error
 }
 
-type locationAreaS struct {
-	Count    int    `json:"count"`
-	Next     *string `json:"next"`
-	Previous *string    `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
+type config struct {
+  Next *string
+  Previous *string
+  cachedData internal.Cache
 }
 
 func getCommand() map[string]cliCommand {
@@ -40,10 +35,12 @@ func getCommand() map[string]cliCommand {
     "map": {
       name: "map",
       help: "Show the next 20 location areas",
-      callback: func ()error {
-        err := commandMap(&locationData)
-        return err
-      },
+      callback: commandMap,
+    },
+    "mapb": {
+      name: "mapb",
+      help: "Show the previous 20 location areas",
+      callback: commandMapBack,
     },
 	}
 }
@@ -51,10 +48,14 @@ func getCommand() map[string]cliCommand {
 func cleanInput(text string) []string {
 	formattedText := strings.ToLower(text)
 	words := strings.Fields(formattedText)
+  if len(words) == 0 {
+    return []string{" "}
+  }
 	return words
 }
 
 func repl() {
+  cfg := config{cachedData: internal.NewCache(5)}
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 	  fmt.Print("\033[33mpokedex\033[0m > ")
@@ -63,7 +64,7 @@ func repl() {
 		command := allWords[0]
 
 		if call, ok := getCommand()[command]; ok {
-      err := call.callback()
+      err := call.callback(&cfg)
       if err != nil {
         fmt.Println(err)
       }
