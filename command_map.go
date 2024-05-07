@@ -1,7 +1,6 @@
 package main
 
 import (
-
 	"fmt"
 
 	"github.com/kalmod/cli_pokedex/internal"
@@ -14,20 +13,20 @@ func commandMap(cfg *config, params ...string) error {
 	}
 
 	locationData := internal.LocationAreaS{}
-  var err error =  nil
+	var err error = nil
 
 	if val, exists := cfg.cachedData.Get(url); exists {
-		locationData, err  = internal.PokeParseToJSON(&locationData, val)
+		err = internal.PokeParseLocationAreaToJSON(&locationData, val)
 		if err != nil {
 			return err
 		}
 	} else {
 		val, err := internal.GetLocationAreas(url)
-    cfg.cachedData.Add(url,val)
+		cfg.cachedData.Add(url, val)
 		if err != nil {
 			return err
 		}
-		locationData, err = internal.PokeParseToJSON(&locationData, val)
+		err = internal.PokeParseLocationAreaToJSON(&locationData, val)
 		if err != nil {
 			return err
 		}
@@ -36,7 +35,7 @@ func commandMap(cfg *config, params ...string) error {
 	cfg.Next = locationData.Next
 	cfg.Previous = locationData.Previous
 
-	internal.PrintLocationNames(&locationData)
+	locationData.PrintAreas()
 
 	return nil
 }
@@ -49,32 +48,31 @@ func commandMapBack(cfg *config, params ...string) error {
 	}
 	url := *cfg.Previous
 
-  locationData := internal.LocationAreaS{}
-  var err error = nil
+	locationData := internal.LocationAreaS{}
+	var err error = nil
 
-  if val, exists := cfg.cachedData.Get(url); exists{
-    locationData, err = internal.PokeParseToJSON(&locationData, val)
-    if err != nil {
-      return err
-    }
+	if val, exists := cfg.cachedData.Get(url); exists {
+		err = internal.PokeParseLocationAreaToJSON(&locationData, val)
+		if err != nil {
+			return err
+		}
 
-  } else {
-    val, err := internal.GetLocationAreas(url)
-    if err != nil {
-      return err
-    }
-    cfg.cachedData.Add(url,val)
-    locationData, err = internal.PokeParseToJSON(&locationData, val)
-    if err != nil {
-      return err
-    }
-  }
-
+	} else {
+		val, err := internal.GetLocationAreas(url)
+		if err != nil {
+			return err
+		}
+		cfg.cachedData.Add(url, val)
+		err = internal.PokeParseLocationAreaToJSON(&locationData, val)
+		if err != nil {
+			return err
+		}
+	}
 
 	cfg.Next = locationData.Next
 	cfg.Previous = locationData.Previous
 
-	internal.PrintLocationNames(&locationData)
+	locationData.PrintAreas()
 
 	return nil
 }

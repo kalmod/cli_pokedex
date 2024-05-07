@@ -1,13 +1,12 @@
 package internal
 
 import (
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 )
 
-type Location struct {
+type LocationInformation struct {
 	EncounterMethodRates []struct {
 		EncounterMethod struct {
 			Name string `json:"name"`
@@ -61,16 +60,16 @@ type Location struct {
 }
 
 
-func ExploreTargetArea(areaName string) (Location, error) {
+
+func ExploreTargetArea(areaName string) ([]byte, error) {
   targetURL := BaseUrl + "/location-area/" + areaName
-  parsedLocationData := Location{}
 
   res, err := http.Get(targetURL)
 
   // Checking if successful
   if err != nil {
     log.Fatal(err)
-    return parsedLocationData, nil
+    return []byte{}, nil
   }
 
   if res.StatusCode > 299 {
@@ -84,13 +83,8 @@ func ExploreTargetArea(areaName string) (Location, error) {
 
   if err != nil {
     log.Fatal(err)
-    return parsedLocationData, nil
-  }
-  
-  err = json.Unmarshal(body, &parsedLocationData)
-  if err != nil {
-    return parsedLocationData,nil
+    return []byte{}, nil
   }
 
-  return parsedLocationData, nil
+  return body, nil
 }
