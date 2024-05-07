@@ -7,7 +7,7 @@ import (
 	"github.com/kalmod/cli_pokedex/internal"
 )
 
-func commandMap(cfg *config) error {
+func commandMap(cfg *config, params ...string) error {
 	url := internal.BaseUrl + "/location-area/"
 	if cfg.Next != nil {
 		url = *cfg.Next
@@ -41,7 +41,7 @@ func commandMap(cfg *config) error {
 	return nil
 }
 
-func commandMapBack(cfg *config) error {
+func commandMapBack(cfg *config, params ...string) error {
 
 	if cfg.Previous == nil {
 		fmt.Println("ERROR: No Previous url")

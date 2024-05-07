@@ -27,8 +27,7 @@ func (c Cache) Get(key string) ([]byte, bool) {
 	return cachedData.val, exists
 }
 
-func NewCache(t int64) Cache {
-	interval := time.Duration(t) * time.Second
+func NewCache(interval time.Duration) Cache {
 	cacheElement := Cache{
 		entry: map[string]cacheEntry{},
 		mu:    &sync.Mutex{},

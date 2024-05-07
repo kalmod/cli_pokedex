@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, params ...string) error {
 
   var Reset = "\033[0m"
   var Yellow = "\033[36m"
