@@ -6,8 +6,8 @@ import (
 )
 
 func commandExplore(cfg *config, params ...string) error {
-	if len(params) > 1 {
-		return errors.New("Too many params.")
+	if len(params) < 1 {
+		return errors.New("No location given")
 	}
   parsedLocationData := internal.LocationInformation{}
 
